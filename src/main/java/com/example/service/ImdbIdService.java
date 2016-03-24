@@ -23,7 +23,7 @@ public class ImdbIdService {
 	private RestTemplate restTemplate;
 
 	@Async
-	public ListenableFuture<String> getDetails(String movie, String year) {
+	public ListenableFuture<String> getImdbId(String movie, String year) {
 		String url = String.format(searchUrl, movie, year);
 		log.debug("in getImdbId for {}", url);
 		Map<?, ?> forObject = restTemplate.getForObject(url, Map.class);

@@ -22,7 +22,7 @@ public class DriverService {
 	@Async
 	public void drive(Stream<Tuple2<String, String>> movieList) {
 
-		movieList.forEach(t -> imdbIdService.getDetails(t._1, t._2).addCallback(imdbId -> {
+		movieList.forEach(t -> imdbIdService.getImdbId(t._1, t._2).addCallback(imdbId -> {
 			rattingService.getDetails(imdbId).addCallback(rate -> {
 				log.info("ratting for {}, {} is {}", t._1, t._2, rate);
 			}, e -> {
