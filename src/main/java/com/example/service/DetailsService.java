@@ -24,7 +24,7 @@ public class DetailsService {
 	@Async
 	public ListenableFuture<String> getDetails(String imdbId) {
 		String url = String.format(detailsUrl, imdbId);
-		log.info("in getImdbRating for {}", url);
+		log.debug("in getImdbRating for {}", url);
 		Map<?, ?> forObject = restTemplate.getForObject(url, Map.class);
 
 		if (forObject != null) {
@@ -40,7 +40,7 @@ public class DetailsService {
 				log.error("rated for {} is null", imdbId);
 			}
 
-			String result = (imdbRating != null ? imdbRating : "") + " " + (rated != null ? rated : "");
+			String result = "imdb (" + (imdbRating != null ? imdbRating : "") + ") - " + (rated != null ? rated : "");
 			return new AsyncResult<String>(result);
 		} else {
 			throw new RuntimeException(String.format("calling details url failed for %s", imdbId));

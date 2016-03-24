@@ -1,6 +1,8 @@
 package com.example;
 
-import java.util.Arrays;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.stream.Stream;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
@@ -31,6 +33,14 @@ public class RateMoviesApplication implements CommandLineRunner {
 
 	@Override
 	public void run(String... arg0) throws Exception {
-		driverService.drive(Arrays.asList(Tuple2.of("The Age of Adaline", "2015")));
+
+		Stream<Tuple2<String, String>> movies = Files.list(Paths.get("/Volumes/Data/Movies")).filter(Files::isDirectory)
+				.map(p -> {
+					String fileName = p.getFileName().toString();
+					return Tuple2.of(fileName.substring(0, fileName.indexOf('(')).trim(),
+							fileName.substring(fileName.indexOf('(') + 1, fileName.indexOf(')')));
+				});
+
+		driverService.drive(movies);
 	}
 }
