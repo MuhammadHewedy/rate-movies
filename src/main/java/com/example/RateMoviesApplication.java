@@ -6,6 +6,7 @@ import java.nio.file.Paths;
 import java.util.stream.Stream;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -13,7 +14,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.web.client.RestTemplate;
 
-import com.example.model.Tuple2;
+import com.example.model.Tuple3;
 import com.example.service.DriverService;
 
 import lombok.extern.slf4j.Slf4j;
@@ -22,6 +23,9 @@ import lombok.extern.slf4j.Slf4j;
 @EnableAsync
 @SpringBootApplication
 public class RateMoviesApplication implements CommandLineRunner {
+
+	@Value("${movies.baseDir}")
+	private String moviesBaseDir;
 
 	@Autowired
 	private DriverService driverService;
@@ -38,18 +42,17 @@ public class RateMoviesApplication implements CommandLineRunner {
 	@Override
 	public void run(String... arg0) throws Exception {
 
-		Stream<Tuple2<String, String>> movies = Files.list(Paths.get("/Users/mhewedy/Temp/testmovies"))
-				.filter(Files::isDirectory).filter(p -> !p.getFileName().toString().contains("imdb"))
-				.map(p -> getTuple(p));
+		Stream<Tuple3<String, String, Path>> movies = Files.list(Paths.get(moviesBaseDir)).filter(Files::isDirectory)
+				.filter(p -> !p.getFileName().toString().contains("imdb")).map(p -> getTuple(p));
 
 		driverService.drive(movies);
 	}
 
-	private Tuple2<String, String> getTuple(Path p) {
+	private Tuple3<String, String, Path> getTuple(Path p) {
 		try {
 			String fileName = p.getFileName().toString();
-			return Tuple2.of(fileName.substring(0, fileName.indexOf('(')).trim(),
-					fileName.substring(fileName.indexOf('(') + 1, fileName.indexOf(')')).trim());
+			return Tuple3.of(fileName.substring(0, fileName.indexOf('(')).trim(),
+					fileName.substring(fileName.indexOf('(') + 1, fileName.indexOf(')')).trim(), p);
 		} catch (Exception ex) {
 			log.error(ex.getMessage() + " for path: " + p);
 			return null;
