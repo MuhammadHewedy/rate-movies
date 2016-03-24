@@ -30,9 +30,9 @@ public class DriverService {
 			rattingService.getDetails(imdbId).addCallback(details -> {
 				log.info("ratting for {}, {} is {}", t._1, t._2, details);
 				try {
-					Files.move(t._3, Paths.get(t._3 + details));
+					Files.move(t._3, Paths.get(t._3 + " " + details));
 				} catch (Exception e1) {
-					log.error("faild to rename path {}", t._3);
+					log.error("faild to rename path {}, {}", t._3, e1.getClass());
 				}
 			}, e -> {
 				log.error(e.getMessage(), e instanceof AppException ? "" : e);
