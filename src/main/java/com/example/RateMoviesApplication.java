@@ -15,6 +15,9 @@ import org.springframework.web.client.RestTemplate;
 import com.example.model.Tuple2;
 import com.example.service.DriverService;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 @EnableAsync
 @SpringBootApplication
 public class RateMoviesApplication implements CommandLineRunner {
@@ -34,12 +37,16 @@ public class RateMoviesApplication implements CommandLineRunner {
 	@Override
 	public void run(String... arg0) throws Exception {
 
-		Stream<Tuple2<String, String>> movies = Files.list(Paths.get("/Volumes/Data/Movies")).filter(Files::isDirectory)
-				.map(p -> {
-					String fileName = p.getFileName().toString();
-					return Tuple2.of(fileName.substring(0, fileName.indexOf('(')).trim(),
-							fileName.substring(fileName.indexOf('(') + 1, fileName.indexOf(')')));
-				});
+		if (arg0 == null || arg0.length < 1) {
+			log.info("provide system path");
+			System.exit(-1);
+		}
+
+		Stream<Tuple2<String, String>> movies = Files.list(Paths.get(arg0[0])).filter(Files::isDirectory).map(p -> {
+			String fileName = p.getFileName().toString();
+			return Tuple2.of(fileName.substring(0, fileName.indexOf('(')).trim(),
+					fileName.substring(fileName.indexOf('(') + 1, fileName.indexOf(')')).trim());
+		});
 
 		driverService.drive(movies);
 	}
