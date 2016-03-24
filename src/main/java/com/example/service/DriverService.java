@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
+import com.example.AppException;
 import com.example.model.Tuple2;
 
 import lombok.extern.slf4j.Slf4j;
@@ -22,14 +23,14 @@ public class DriverService {
 	@Async
 	public void drive(Stream<Tuple2<String, String>> movieList) {
 
-		movieList.forEach(t -> imdbIdService.getImdbId(t._1, t._2).addCallback(imdbId -> {
+		movieList.filter(o -> o != null).forEach(t -> imdbIdService.getImdbId(t._1, t._2).addCallback(imdbId -> {
 			rattingService.getDetails(imdbId).addCallback(rate -> {
 				log.info("ratting for {}, {} is {}", t._1, t._2, rate);
 			}, e -> {
-				log.error(e.getMessage());
+				log.error(e.getMessage(), e instanceof AppException ? "" : e);
 			});
 		}, e -> {
-			log.error(e.getMessage());
+			log.error(e.getMessage(), e instanceof AppException ? "" : e);
 		}));
 	}
 }

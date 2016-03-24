@@ -11,6 +11,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.concurrent.ListenableFuture;
 import org.springframework.web.client.RestTemplate;
 
+import com.example.AppException;
+
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -38,13 +40,13 @@ public class ImdbIdService {
 				if (imdbId != null) {
 					return new AsyncResult<String>((String) imdbId);
 				} else {
-					throw new RuntimeException(String.format("imdbId is null for %s, %s", movie, year));
+					throw new AppException(String.format("imdbId is null for %s, %s", movie, year));
 				}
 			} else {
-				throw new RuntimeException(String.format("Search object is empty for %s, %s", movie, year));
+				throw new AppException(String.format("Search object is empty for %s, %s", movie, year));
 			}
 		} else {
-			throw new RuntimeException(String.format("calling search url failed for %s, %s", movie, year));
+			throw new AppException(String.format("calling search url failed for %s, %s", movie, year));
 		}
 	}
 }

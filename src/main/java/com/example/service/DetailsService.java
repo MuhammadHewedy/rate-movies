@@ -10,6 +10,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.concurrent.ListenableFuture;
 import org.springframework.web.client.RestTemplate;
 
+import com.example.AppException;
+
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -43,7 +45,7 @@ public class DetailsService {
 			String result = "imdb (" + (imdbRating != null ? imdbRating : "") + ") - " + (rated != null ? rated : "");
 			return new AsyncResult<String>(result);
 		} else {
-			throw new RuntimeException(String.format("calling details url failed for %s", imdbId));
+			throw new AppException(String.format("calling details url failed for %s", imdbId));
 		}
 	}
 }
